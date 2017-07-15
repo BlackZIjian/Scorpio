@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var device = require('./routes/device');
 
 var app = express();
 
@@ -22,8 +23,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+var mongoose = require('mongoose');
+
+global.dbHandel = require('./database/dbHandle');
+global.db = mongoose.connect("mongodb://106.14.196.96:27017/Scorpio");
+global.ObjectId = require('mongodb').ObjectId;
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
 app.use('/', index);
-app.use('/users', users);
+app.use('/api/user', users);
+app.use('/api/device', device);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
