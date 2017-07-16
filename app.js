@@ -32,9 +32,42 @@ global.ObjectId = require('mongodb').ObjectId;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+var clientState = require('./HeartBeat/heartBeat').clientState;
+var config = require('./Config/config');
+setInterval(function () {
+  for(var key in clientState) {
+    var deviceId = key;
+    if(clientState[deviceId]) {
+      console.log("设备:" + deviceId +"在线");
+      clientState[deviceId] = false;
+    }
+    else {
+        var Device = global.dbHandel.getModel('device');
+        Device.update({deviceId:deviceId},{$set:{
+            isActive:false
+        }
+        },function (err,doc) {
+            console.log("设备:" + deviceId +"踢出");
+            delete clientState[deviceId];
+        });
+    }
+  }
+},config.heartBeatCheckTime);
+
+app.use('/',function (req,res,next) {
+    var deviceId = req.body.deviceId;
+    if(deviceId){
+        clientState[deviceId] = true;
+        console.log("设备:" + deviceId + "在线");
+    }
+    next();
+});
+
 app.use('/', index);
 app.use('/api/user', users);
 app.use('/api/device', device);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -5,8 +5,7 @@ module.exports = {
     user:{
         name:{type:String,required:true},
         password:{type:String,required:true},
-        activeDevice:{type:Array,required:false},
-        inactiveDevice:{type:Array,required:false}
+        devices:{type:Array,required:false}
     },
     device:{
         deviceId:{type:String,required:true},
