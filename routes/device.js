@@ -52,7 +52,9 @@ router.post('/set',function (req,res,next) {
                             if(devices == null) {
                                 devices = [];
                             }
-                            devices.push(deviceId);
+                            if(devices.indexOf(deviceId) < 0) {
+                                devices.push(deviceId);
+                            }
                             User.update({_id:_userId},{
                                 $set:{devices:devices}
                             },function (err,doc) {
